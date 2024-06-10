@@ -1,0 +1,44 @@
+package usecase
+
+import (
+	"context"
+	"gymSystem/internal/domain/user"
+	"gymSystem/internal/domain/user/entities"
+	"gymSystem/internal/domain/user/models"
+)
+
+type usecase struct {
+	repo user.Repository
+}
+
+func NewUsecase(repo user.Repository) user.Usecase {
+	return &usecase{repo: repo}
+}
+
+func (u *usecase) RegisterUser(ctx context.Context, request models.RegisterUserRequest) (response models.RegisterUserResponse, err error) {
+
+	registerUsertx := entities.RegisterUsertx{
+		User: entities.User{
+			Name:      request.Name,
+			Lastname1: request.Lastname1,
+			Lastname2: request.Lastname2,
+			Email:     request.Email,
+			Phone:     request.Phone,
+		},
+		AccountTypeID:      request.AccountTypeID,
+		SubscriptionCostID: request.SubscriptionCostID,
+		PaymentTypeID:      request.PaymentTypeID,
+		Ammount:            request.Ammount,
+	}
+
+	userID, err := u.repo.RegisterUser(ctx, &registerUsertx)
+	if err != nil {
+		return response, err
+	}
+
+	response = models.RegisterUserResponse{
+		UserID: userID,
+	}
+
+	return response, nil
+}

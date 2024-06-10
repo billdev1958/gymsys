@@ -1,4 +1,4 @@
-package user_test
+package repository_test
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"gymSystem/internal/domain/user/models"
+	"gymSystem/internal/domain/user/entities"
 	user "gymSystem/internal/domain/user/repository"
 	postgres "gymSystem/internal/infrastructure/db"
 )
@@ -59,8 +59,8 @@ func TestRegisterUser(t *testing.T) {
 	userRepo := user.NewUserRepository(&postgres.PgxStorage{DBPool: dbPool})
 
 	t.Run("Success", func(t *testing.T) {
-		register := &user.RegisterUsertx{
-			User: models.User{
+		register := &entities.RegisterUsertx{
+			User: entities.User{
 				Name:      "John",
 				Lastname1: "Doe",
 				Lastname2: "Smith",
@@ -84,8 +84,8 @@ func TestRegisterUser(t *testing.T) {
 	})
 
 	t.Run("Fail_InsertUser", func(t *testing.T) {
-		register := &user.RegisterUsertx{
-			User: models.User{
+		register := &entities.RegisterUsertx{
+			User: entities.User{
 				Name:      "John",
 				Lastname1: "Doe",
 				Lastname2: "Smith",
@@ -106,8 +106,8 @@ func TestRegisterUser(t *testing.T) {
 	})
 
 	t.Run("Fail_CostMismatch", func(t *testing.T) {
-		register := &user.RegisterUsertx{
-			User: models.User{
+		register := &entities.RegisterUsertx{
+			User: entities.User{
 				Name:      "John",
 				Lastname1: "Doe",
 				Lastname2: "Smith",

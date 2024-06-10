@@ -1,4 +1,4 @@
-package models
+package entities
 
 import (
 	"time"
@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	ID        int
+	ID        int32
 	Name      string
 	Lastname1 string
 	Lastname2 string
@@ -18,17 +18,25 @@ type User struct {
 }
 
 type AccountType struct {
-	ID   int
+	ID   int32
 	Name string
 }
 
 type Accounts struct {
-	ID             int
-	UserID         int
+	ID             int32
+	UserID         int32
 	AccountID      uuid.UUID
-	AccountTypeID  int
-	SubscriptionID int
-	Status         int
+	AccountTypeID  int32
+	SubscriptionID int32
+	Status         int32
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
+}
+
+type RegisterUsertx struct {
+	User
+	AccountTypeID      int32
+	SubscriptionCostID int32
+	PaymentTypeID      int32
+	Ammount            float64
 }

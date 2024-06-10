@@ -1,36 +1,25 @@
-package user
+package repository
 
 import (
 	"context"
 	"fmt"
-	"gymSystem/internal/domain/user/models"
+	"gymSystem/internal/domain/user"
+	"gymSystem/internal/domain/user/entities"
 	postgres "gymSystem/internal/infrastructure/db"
 	"time"
 
 	"github.com/google/uuid"
 )
 
-type UserRepository interface {
-	RegisterUser(ctx context.Context, register *RegisterUsertx) (int, error)
-}
-
 type userRepository struct {
 	storage *postgres.PgxStorage
 }
 
-func NewUserRepository(storage *postgres.PgxStorage) UserRepository {
+func NewUserRepository(storage *postgres.PgxStorage) user.Repository {
 	return &userRepository{storage: storage}
 }
 
-type RegisterUsertx struct {
-	models.User
-	AccountTypeID      int32
-	SubscriptionCostID int32
-	PaymentTypeID      int32
-	Ammount            float64
-}
-
-func (ur *userRepository) RegisterUser(ctx context.Context, register *RegisterUsertx) (int, error) {
+func (ur *userRepository) RegisterUser(ctx context.Context, register *entities.RegisterUsertx) (int32, error) {
 
 	tx, err := ur.storage.DBPool.Begin(ctx)
 	if err != nil {
@@ -42,7 +31,7 @@ func (ur *userRepository) RegisterUser(ctx context.Context, register *RegisterUs
 		}
 	}()
 
-	var userID int
+	var userID int32
 	query := "INSERT INTO users (name, lastname1, lastname2, email, phone, created_at) VALUES($1, $2, $3, $4, $5, $6) RETURNING id"
 	err = tx.QueryRow(ctx, query, register.Name, register.Lastname1, register.Lastname2, register.Email, register.Phone, register.CreatedAt).Scan(&userID)
 	if err != nil {
