@@ -36,7 +36,7 @@ func TestRegisterUser(t *testing.T) {
 		AccountTypeID:      1,
 		SubscriptionCostID: 1,
 		PaymentTypeID:      1,
-		Ammount:            29.0,
+		Amount:             29.0,
 	}
 
 	jsonRequestBody, err := json.Marshal(requestBody)

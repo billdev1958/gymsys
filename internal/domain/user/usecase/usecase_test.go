@@ -68,7 +68,7 @@ func TestRegisterUser(t *testing.T) {
 			AccountTypeID:      1,
 			SubscriptionCostID: 1, // Correspondiente a 'Sencilla', 1 día, 29.00
 			PaymentTypeID:      1,
-			Ammount:            29.0,
+			Amount:             29.0,
 		}
 
 		response, err := userUsecase.RegisterUser(context.Background(), request)
@@ -90,7 +90,7 @@ func TestRegisterUser(t *testing.T) {
 			AccountTypeID:      1,
 			SubscriptionCostID: 1, // Correspondiente a 'Sencilla', 1 día, 29.00
 			PaymentTypeID:      1,
-			Ammount:            29.0,
+			Amount:             29.0,
 		}
 
 		_, err := userUsecase.RegisterUser(context.Background(), request)
@@ -109,7 +109,7 @@ func TestRegisterUser(t *testing.T) {
 			AccountTypeID:      1,
 			SubscriptionCostID: 1, // Correspondiente a 'Sencilla', 1 día, 29.00
 			PaymentTypeID:      1,
-			Ammount:            9999.99, // Mismatch cost to trigger an error
+			Amount:             9999.99, // Mismatch cost to trigger an error
 		}
 
 		_, err := userUsecase.RegisterUser(context.Background(), request)

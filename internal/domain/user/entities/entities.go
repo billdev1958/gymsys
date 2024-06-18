@@ -35,8 +35,10 @@ type Accounts struct {
 
 type RegisterUsertx struct {
 	User
+	AccountID          uuid.UUID
 	AccountTypeID      int32
 	SubscriptionCostID int32
+	SubscriptionID     int32
 	PaymentTypeID      int32
-	Ammount            float64
+	Amount             float64
 }

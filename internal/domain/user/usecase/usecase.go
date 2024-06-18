@@ -5,6 +5,7 @@ import (
 	"gymSystem/internal/domain/user"
 	"gymSystem/internal/domain/user/entities"
 	"gymSystem/internal/domain/user/models"
+	"log"
 )
 
 type usecase struct {
@@ -28,11 +29,12 @@ func (u *usecase) RegisterUser(ctx context.Context, request models.RegisterUserR
 		AccountTypeID:      request.AccountTypeID,
 		SubscriptionCostID: request.SubscriptionCostID,
 		PaymentTypeID:      request.PaymentTypeID,
-		Ammount:            request.Ammount,
+		Amount:             request.Amount,
 	}
 
 	userID, err := u.repo.RegisterUser(ctx, &registerUsertx)
 	if err != nil {
+		log.Printf("error registering user: %v", err)
 		return response, err
 	}
 

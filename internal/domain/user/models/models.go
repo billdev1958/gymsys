@@ -9,7 +9,7 @@ type RegisterUserRequest struct {
 	AccountTypeID      int32
 	SubscriptionCostID int32
 	PaymentTypeID      int32
-	Ammount            float64
+	Amount             float64
 }
 
 type RegisterUserResponse struct {

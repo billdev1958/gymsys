@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"gymSystem/internal/domain/user/entities"
@@ -71,15 +72,26 @@ func TestRegisterUser(t *testing.T) {
 			AccountTypeID:      1,
 			SubscriptionCostID: 1, // Correspondiente a 'Sencilla', 1 día, 29.00
 			PaymentTypeID:      1,
-			Ammount:            29.0,
+			Amount:             29.0,
+			AccountID:          uuid.New(), // Generar un nuevo UUID para la cuenta
 		}
 
-		userID, err := userRepo.RegisterUser(context.Background(), register)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) // Añadir un contexto con timeout
+		defer cancel()
+
+		userID, err := userRepo.RegisterUser(ctx, register)
 		if err != nil {
 			t.Fatalf("expected no error, got %v", err)
 		}
 		if userID == 0 {
 			t.Fatalf("expected valid userID, got %v", userID)
+		}
+
+		// Verificar que el usuario se ha registrado correctamente
+		var count int
+		err = dbPool.QueryRow(context.Background(), "SELECT COUNT(*) FROM users WHERE id = $1", userID).Scan(&count)
+		if err != nil || count != 1 {
+			t.Fatalf("expected user to be registered, got count %v, err %v", count, err)
 		}
 	})
 
@@ -96,10 +108,14 @@ func TestRegisterUser(t *testing.T) {
 			AccountTypeID:      1,
 			SubscriptionCostID: 1, // Correspondiente a 'Sencilla', 1 día, 29.00
 			PaymentTypeID:      1,
-			Ammount:            29.0,
+			Amount:             29.0,
+			AccountID:          uuid.New(), // Generar un nuevo UUID para la cuenta
 		}
 
-		_, err := userRepo.RegisterUser(context.Background(), register)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) // Añadir un contexto con timeout
+		defer cancel()
+
+		_, err := userRepo.RegisterUser(ctx, register)
 		if err == nil || !strings.Contains(err.Error(), "insert user") {
 			t.Fatalf("expected insert user error, got %v", err)
 		}
@@ -118,12 +134,16 @@ func TestRegisterUser(t *testing.T) {
 			AccountTypeID:      1,
 			SubscriptionCostID: 1, // Correspondiente a 'Sencilla', 1 día, 29.00
 			PaymentTypeID:      1,
-			Ammount:            9999.99, // Mismatch cost to trigger an error
+			Amount:             9999.99,    // Mismatch cost to trigger an error
+			AccountID:          uuid.New(), // Generar un nuevo UUID para la cuenta
 		}
 
-		_, err := userRepo.RegisterUser(context.Background(), register)
-		if err == nil || !strings.Contains(err.Error(), "ammount incorrect") {
-			t.Fatalf("expected ammount incorrect error, got %v", err)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) // Añadir un contexto con timeout
+		defer cancel()
+
+		_, err := userRepo.RegisterUser(ctx, register)
+		if err == nil || !strings.Contains(err.Error(), "amount incorrect") {
+			t.Fatalf("expected amount incorrect error, got %v", err)
 		}
 	})
 }
