@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -66,6 +67,7 @@ func TestRegisterUser(t *testing.T) {
 			Email:              "john.doe@example.com",
 			Phone:              "1234567890",
 			AccountTypeID:      1,
+			AccountID:          uuid.New(),
 			SubscriptionCostID: 1, // Correspondiente a 'Sencilla', 1 día, 29.00
 			PaymentTypeID:      1,
 			Amount:             29.0,
@@ -88,6 +90,7 @@ func TestRegisterUser(t *testing.T) {
 			Email:              "", // Invalid email to trigger an error
 			Phone:              "1234567890",
 			AccountTypeID:      1,
+			AccountID:          uuid.New(),
 			SubscriptionCostID: 1, // Correspondiente a 'Sencilla', 1 día, 29.00
 			PaymentTypeID:      1,
 			Amount:             29.0,
@@ -107,14 +110,15 @@ func TestRegisterUser(t *testing.T) {
 			Email:              "john.doe2@example.com", // Using a different email to avoid unique constraint error
 			Phone:              "1234567890",
 			AccountTypeID:      1,
+			AccountID:          uuid.New(),
 			SubscriptionCostID: 1, // Correspondiente a 'Sencilla', 1 día, 29.00
 			PaymentTypeID:      1,
 			Amount:             9999.99, // Mismatch cost to trigger an error
 		}
 
 		_, err := userUsecase.RegisterUser(context.Background(), request)
-		if err == nil || !strings.Contains(err.Error(), "ammount incorrect") {
-			t.Fatalf("expected ammount incorrect error, got %v", err)
+		if err == nil || !strings.Contains(err.Error(), "amount incorrect") {
+			t.Fatalf("expected amount incorrect error, got %v", err)
 		}
 	})
 }

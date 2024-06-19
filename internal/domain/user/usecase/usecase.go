@@ -6,6 +6,8 @@ import (
 	"gymSystem/internal/domain/user/entities"
 	"gymSystem/internal/domain/user/models"
 	"log"
+
+	"github.com/google/uuid"
 )
 
 type usecase struct {
@@ -27,6 +29,7 @@ func (u *usecase) RegisterUser(ctx context.Context, request models.RegisterUserR
 			Phone:     request.Phone,
 		},
 		AccountTypeID:      request.AccountTypeID,
+		AccountID:          uuid.New(),
 		SubscriptionCostID: request.SubscriptionCostID,
 		PaymentTypeID:      request.PaymentTypeID,
 		Amount:             request.Amount,
