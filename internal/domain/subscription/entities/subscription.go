@@ -1,6 +1,10 @@
-package subscription
+package entities
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type SubscriptionCosts struct {
 	ID               int32
@@ -11,7 +15,7 @@ type SubscriptionCosts struct {
 
 type Subscription struct {
 	ID                 int32
-	AccountID          int32
+	AccountID          uuid.UUID
 	SubscriptionCostID int32
 	StartDate          time.Time
 	EndDate            time.Time

@@ -3,9 +3,14 @@ package repository
 import (
 	"context"
 	"fmt"
+
+	"gymSystem/internal/domain/subscription"
+	subscriptionEntities "gymSystem/internal/domain/subscription/entities"
+	"gymSystem/internal/domain/subscription/repository"
 	"gymSystem/internal/domain/user"
 	"gymSystem/internal/domain/user/entities"
 	postgres "gymSystem/internal/infrastructure/db"
+
 	"log"
 	"time"
 
@@ -14,11 +19,13 @@ import (
 )
 
 type userRepository struct {
-	storage *postgres.PgxStorage
+	storage          *postgres.PgxStorage
+	subscriptionRepo subscription.Repository
 }
 
 func NewUserRepository(storage *postgres.PgxStorage) user.Repository {
-	return &userRepository{storage: storage}
+	subscriptionRepo := repository.NewSubscriptionRepository(storage)
+	return &userRepository{storage: storage, subscriptionRepo: subscriptionRepo}
 }
 
 func (ur *userRepository) RegisterUser(ctx context.Context, register *entities.RegisterUsertx) (userID int32, err error) {
@@ -54,10 +61,15 @@ func (ur *userRepository) RegisterUser(ctx context.Context, register *entities.R
 		return 0, err
 	}
 
-	err = ur.createSubscription(ctxTx, tx, accountID, register)
+	subscriptionRegister := &subscriptionEntities.Subscription{
+		AccountID:          accountID,
+		SubscriptionCostID: register.SubscriptionCostID,
+	}
+	subscriptionID, err := ur.subscriptionRepo.RegisterSubscription(ctxTx, tx, subscriptionRegister)
 	if err != nil {
 		return 0, err
 	}
+	register.SubscriptionID = subscriptionID
 
 	err = ur.verifyAndInsertPayment(ctxTx, tx, accountID, register)
 	if err != nil {
@@ -91,28 +103,6 @@ func (ur *userRepository) createAccount(ctx context.Context, tx pgx.Tx, register
 		return uuid.Nil, fmt.Errorf("insert account: %w", err)
 	}
 	return register.AccountID, nil
-}
-
-func (ur *userRepository) createSubscription(ctx context.Context, tx pgx.Tx, accountID uuid.UUID, register *entities.RegisterUsertx) error {
-	var subscriptionDuration int
-	query := "SELECT subscription_day FROM subscription_costs WHERE id = $1"
-	err := tx.QueryRow(ctx, query, register.SubscriptionCostID).Scan(&subscriptionDuration)
-	if err != nil {
-		log.Printf("error getting subscription duration: %v", err)
-		return fmt.Errorf("get subscription duration: %w", err)
-	}
-
-	startDate := time.Now()
-	endDate := startDate.AddDate(0, 0, subscriptionDuration)
-
-	// Crear subscripcion
-	query = "INSERT INTO subscriptions (account_id, subscription_cost_id, start_date, end_date) VALUES($1, $2, $3, $4) RETURNING id"
-	err = tx.QueryRow(ctx, query, accountID, register.SubscriptionCostID, startDate, endDate).Scan(&register.SubscriptionID)
-	if err != nil {
-		log.Printf("error inserting subscription: %v", err)
-		return fmt.Errorf("insert subscription: %w", err)
-	}
-	return nil
 }
 
 func (ur *userRepository) verifyAndInsertPayment(ctx context.Context, tx pgx.Tx, accountID uuid.UUID, register *entities.RegisterUsertx) error {
