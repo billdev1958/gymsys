@@ -28,7 +28,7 @@ func NewApp(port string) (*App, error) {
 		return nil, fmt.Errorf("failed to setup database: %w", err)
 	}
 
-	if err := seedDatabase(context.Background(), db); err != nil {
+	if err := seedDatabase(db); err != nil {
 		return nil, fmt.Errorf("failed to seed database: %w", err)
 	}
 
@@ -74,7 +74,7 @@ func setupDatabase(dsn string) (*pgxpool.Pool, error) {
 	return dbpool, nil
 }
 
-func seedDatabase(ctx context.Context, dbPool *pgxpool.Pool) error {
+func seedDatabase(dbPool *pgxpool.Pool) error {
 	storage := postgres.NewPgxStorage(dbPool)
 
 	err := storage.SeedSubscriptionCost(context.Background())
