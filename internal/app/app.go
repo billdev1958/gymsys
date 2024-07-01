@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	postgres "gymSystem/internal/infrastructure/db"
+	"gymSystem/internal/middleware"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -42,9 +44,17 @@ func NewApp(port string) (*App, error) {
 }
 
 func (app *App) Run() error {
+
+	middleware.Logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	loggingMiddleware := middleware.NewLoggingMiddleware(app.router)
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%s", app.port),
-		Handler: app.router,
+		Handler: loggingMiddleware,
+	}
+
+	if err := StartUserService(context.Background(), app.DB, app.router); err != nil {
+		return fmt.Errorf("failed to start user service: %w", err)
 	}
 
 	quit := make(chan os.Signal, 1)

@@ -17,4 +17,7 @@ type RegisterUserRequest struct {
 
 type RegisterUserResponse struct {
 	UserID int32
+	Name   string
+	Email  string
+	Amount float64
 }
