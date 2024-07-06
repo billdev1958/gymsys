@@ -46,6 +46,7 @@ func (u *usecase) RegisterPayment(ctx context.Context, request models.RegisterUs
 		Lastname1: request.Lastname1,
 		Lastname2: request.Lastname2,
 		Email:     request.Email,
+		Amount:    request.Amount,
 	}
 
 	return response, nil
