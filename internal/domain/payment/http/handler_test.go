@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	v1 "gymSystem/internal/domain/user/http"
-	"gymSystem/internal/domain/user/models"
+	v1 "gymSystem/internal/domain/payment/http"
+	"gymSystem/internal/domain/payment/models"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -15,7 +15,7 @@ import (
 type mockUsecase struct{}
 
 // RegisterUser es una implementación mock del método RegisterUser del caso de uso.
-func (m *mockUsecase) RegisterUser(ctx context.Context, request models.RegisterUserRequest) (models.RegisterUserResponse, error) {
+func (m *mockUsecase) RegisterPayment(ctx context.Context, request models.RegisterUserRequest) (models.RegisterUserResponse, error) {
 	return models.RegisterUserResponse{
 		UserID: 1,
 	}, nil

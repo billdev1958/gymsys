@@ -2,17 +2,17 @@ package v1
 
 import (
 	"encoding/json"
-	"gymSystem/internal/domain/user"
-	"gymSystem/internal/domain/user/models"
+	"gymSystem/internal/domain/payment"
+	"gymSystem/internal/domain/payment/models"
 	"log"
 	"net/http"
 )
 
 type handler struct {
-	uc user.Usecase
+	uc payment.Usecase
 }
 
-func NewHandler(uc user.Usecase) *handler {
+func NewHandler(uc payment.Usecase) *handler {
 	return &handler{uc: uc}
 }
 
@@ -25,7 +25,7 @@ func (h handler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := h.uc.RegisterUser(r.Context(), request)
+	response, err := h.uc.RegisterPayment(r.Context(), request)
 	if err != nil {
 		log.Printf("error registering user: %v", err)
 		http.Error(w, "errors", http.StatusInternalServerError)

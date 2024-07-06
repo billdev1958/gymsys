@@ -1,7 +1,5 @@
 package models
 
-import "github.com/google/uuid"
-
 type RegisterUserRequest struct {
 	Name               string
 	Lastname1          string
@@ -9,7 +7,6 @@ type RegisterUserRequest struct {
 	Email              string
 	Phone              string
 	AccountTypeID      int32
-	AccountID          uuid.UUID
 	SubscriptionCostID int32
 	PaymentTypeID      int32
 	Amount             float64
